@@ -1,0 +1,28 @@
+{
+    "method": "bayes",
+    "metric": {
+        "name": "Episode/pace",
+        "goal": "maximize"
+    },
+    "run_cap": 5000,
+    "parameters": {
+        "env_cfg.domain_rand.lower_mass_offset":{
+            "min": -0.5, "max":4.0
+        },
+        "env_cfg.domain_rand.lower_z_offset":{
+            "min": 0.0, "max":0.5
+        },
+        "env_cfg.osc.process_noise_std":{
+            "min":0.0, "max":1.0
+        },
+        "train_cfg.policy.reward.base_height_target":{
+            "min":0.2, "max":0.5
+        },
+        "env_cfg.asset.file":{
+            "values": ["{LEGGED_GYM_ROOT_DIR}/resources/robots/mini_cheetah/urdf/mini_cheetah_0.urdf", "{LEGGED_GYM_ROOT_DIR}/resources/robots/mini_cheetah/urdf/mini_cheetah_10.urdf"]
+        },
+        "env_cfg.control.ctrl_frequency":{
+            "values": [10, 25, 50, 100]
+        }
+    }
+}

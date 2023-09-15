@@ -1,0 +1,466 @@
+<?xml version="1.0" ?>
+<robot name="mini_cheetah">
+<!-- Mini Cheetah "rotor" URDF -->
+
+<!-- 
+This URDF contains information for the MIT Mini Cheetah, suitable for use in
+IsaacGym
+Rotor inertia approximations are included via the "armature" property 
+
+Rotor mass: 
+    0.055 kg 
+Rotor inertia: 
+    63e-6 kgm2 on axis of rotation 
+Gearing: 
+    Ab/ad: 6 
+    Hip:   6 
+    Knee:  9.33
+Armature inertia:
+    Ab/ad: 6*^2*63e-6 = 0.002268
+    Hip:   6^2*63e-6 = 0.002268
+    Knee:  9.33^2*63e-6 = 0.005484
+Rotor damping: 
+    0.01 Nms
+Rotor dry friction: 
+    Not used - calculated in Robot-Software as q_dot*dryFriction, but IsaacGym
+    calculated dry friction from the applied normal force on the joint
+    0.2 Nm/s
+-->
+
+<!-- Base -->
+<link name="base">
+    <inertial>
+        <!-- Rotor mass added directly to base of robot -->
+        <!-- Rotor masses don't move much relative to base, easier bookkeeping -->
+        <!-- Base body mass -->
+        <!-- <mass value="3.3"/>  -->
+        <mass value="3.96"/>        <!-- Rotor mass: 12 motors * 0.055 kg / motor -->
+        <origin xyz="0.0 0.0 0.0"/>
+        <inertia ixx="0.011253" ixy="0" ixz="0" iyy="0.362030" iyz="0" izz="0.042673"/>
+    </inertial>
+    <visual>
+        <geometry><mesh filename="meshes/mini_vision_body.dae"/></geometry>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <collision>
+        <geometry><box size="0.30 0.20 0.10"/></geometry>
+        <origin rpy="0 0 0" xyz="0 0 0.01"/>
+    </collision>
+</link>
+
+
+<!-- RF Leg -->
+<!-- RF Hip and HAA -->
+<joint name="1_rf_haa" type="revolute">
+    <axis xyz="1 0 0"/>
+    <origin rpy="0 0 0" xyz="0.14775 -0.049 0.0"/>
+    <parent link="base"/>
+    <child link="rf_hip"/>
+    <limit effort="18" lower="-1.5" upper="1.5" velocity="41" armature="0.002268" damping="0.01"/>
+</joint>
+
+<link name="rf_hip">
+    <inertial>
+        <mass value="0.54"/>
+        <origin xyz="0.055 -0.036 0."/>
+        <inertia ixx="0.000381" ixy="0.000058" ixz="0.00000045" iyy="0.000560" iyz="0.00000095" izz="0.000444"/>
+    </inertial>
+    <visual>
+        <geometry>
+            <mesh filename="meshes/mini_vision_abd.dae"/>
+        </geometry>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <!-- <collision>
+        <geometry><cylinder length ="0.025" radius = "0.05"/></geometry>
+        <origin rpy="1.57079632679 0.0 0.0" xyz="0.052 -0.02 0.0"/>
+    </collision> -->
+</link>
+
+<!-- RF Thigh and HFE -->
+<joint name="rf_hfe" type="revolute">
+    <axis xyz="0 -1 0"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.055 -0.019 0.00"/>
+    <parent link="rf_hip"/>
+    <child link="rf_thigh"/>
+    <limit effort="18" lower="-2.6" upper="2.6" velocity="41" armature="0.002268" damping="0.01"/>
+</joint>
+
+<link name="rf_thigh">
+    <inertial>
+        <mass value="0.634"/>
+        <origin xyz="0.0 -0.016 -0.02"/>
+        <inertia ixx="0.001983" ixy="0.000245" ixz="0.000013" iyy="0.002103" iyz="0.0000015" izz="0.000408"/>
+    </inertial>
+    <visual>
+        <geometry>
+            <mesh filename="meshes/mini_vision_upper_leg.dae"/>
+        </geometry>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <collision>
+        <geometry>
+            <cylinder length ="0.17" radius = "0.015"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 -0.05 -0.092"/>
+    </collision>
+</link>
+
+<!-- RF Shank and KFE -->
+<joint name="rf_kfe" type="revolute">
+    <axis xyz="0 -1 0"/>
+    <origin rpy="0.0 0 0.0" xyz="0.0 -0.049 -0.2085"/>
+    <parent link="rf_thigh"/>
+    <child link="rf_shank"/>
+    <limit effort="28" lower="-2.7" upper="2.7" velocity="26.8" armature="0.005484" damping="0.01"/>
+</joint>
+
+<link name="rf_shank">
+    <inertial>
+        <mass value="0.064"/>
+        <origin xyz="0.0 0.0 -0.061"/>
+        <inertia ixx="0.000245" ixy="0" ixz="0.0" iyy="0.000248" iyz="0" izz="0.000006"/>
+    </inertial>
+    <visual>
+        <geometry>
+            <mesh filename="meshes/lower_leg.dae"/>
+        </geometry>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <collision>
+        <geometry>
+            <cylinder length ="0.1" radius = "0.01"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 0 -0.1"/>
+    </collision>
+</link>
+
+<!-- RF FOOT -->
+<joint name="rf_shank_to_foot" type="fixed" dont_collapse="true">
+    <parent link="rf_shank"/>
+    <child link="rf_foot"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.22"/>
+</joint>
+
+<link name="rf_foot">
+    <collision>
+        <origin xyz="0 0.0 0.024"/>
+        <geometry><sphere radius="0.0202"/></geometry>
+    </collision>
+    <inertial>
+        <origin rpy="0 0 0" xyz="0 0 0.0"/>
+        <mass value="0.01"/>
+        <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+</link>
+
+<!-- LF Leg -->
+<!-- LF Hip and HAA -->
+<joint name="2_lf_haa" type="revolute">
+    <axis xyz="1 0 0"/>
+    <origin rpy="0 0 0" xyz="0.14775 0.049 0.0"/>
+    <parent link="base"/>
+    <child link="lf_hip"/>
+    <limit effort="18" lower="-1.5" upper="1.5" velocity="41" armature="0.002268" damping="0.01"/>
+</joint>
+
+<link name="lf_hip">
+    <inertial>
+        <mass value="0.54"/>
+        <origin xyz="0.055 0.036 0."/>
+        <inertia ixx="0.000381" ixy="0.000058" ixz="0.00000045" iyy="0.000560" iyz="0.00000095" izz="0.000444"/>
+    </inertial>
+    <visual>
+        <geometry><mesh filename="meshes/mini_vision_abd.dae"/></geometry>
+        <origin rpy="3.141592 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <!-- <collision>
+        <geometry><cylinder length ="0.025" radius = "0.05"/></geometry>
+        <origin rpy="1.57079632679 0.0 0.0" xyz="0.052 0.02 0.0"/>
+    </collision> -->
+</link>
+
+<!-- LF Thigh and HFE -->
+<joint name="lf_hfe" type="revolute">
+    <axis xyz="0 -1 0"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.055 0.019 0.00"/>
+    <parent link="lf_hip"/>
+    <child link="lf_thigh"/>
+    <limit effort="18" lower="-2.6" upper="2.6" velocity="41" armature="0.002268" damping="0.01"/>
+</joint>
+
+<link name="lf_thigh">
+    <inertial>
+        <mass value="0.634"/>
+        <origin xyz="0.0 0.016 -0.02"/>
+        <inertia ixx="0.001983" ixy="0.000245" ixz="0.000013" iyy="0.002103" iyz="0.0000015" izz="0.000408"/>
+    </inertial>
+    <visual>
+        <geometry>
+            <mesh filename="meshes/mini_vision_upper_leg.dae"/>
+        </geometry>
+        <origin rpy="0.0 0 3.141592" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <collision>
+        <geometry><cylinder length ="0.17" radius = "0.015"/></geometry>
+        <origin rpy="0 0 0" xyz="0 0.05 -0.092"/>
+    </collision>
+</link>
+
+<!-- LF Shank and KFE -->
+<joint name="lf_kfe" type="revolute">
+    <axis xyz="0 -1 0"/>
+    <origin rpy="0.0 0 0.0" xyz="0.0 0.049 -0.2085"/>
+    <parent link="lf_thigh"/>
+    <child link="lf_shank"/>
+    <limit effort="28" lower="-2.7" upper="2.7" velocity="26.8" armature="0.005484" damping="0.01"/>
+</joint>
+
+<link name="lf_shank">
+    <inertial>
+        <mass value="0.064"/>
+        <origin xyz="0.0 0.0 -0.061"/>
+        <inertia ixx="0.000245" ixy="0" ixz="0.0" iyy="0.000248" iyz="0" izz="0.000006"/>
+    </inertial>
+    <visual>
+        <geometry>
+            <mesh filename="meshes/lower_leg.dae"/>
+        </geometry>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <collision>
+        <geometry>
+            <cylinder length ="0.1" radius = "0.01"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 0 -0.1"/>
+    </collision>
+</link>
+
+<!-- LF FOOT -->
+<joint name="lf_shank_to_foot" type="fixed" dont_collapse="true">
+    <parent link="lf_shank"/>
+    <child link="lf_foot"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.22"/>
+</joint>
+
+<link name="lf_foot">
+    <collision>
+        <origin xyz="0 0.0 0.024"/>
+        <geometry><sphere radius="0.0202"/></geometry>
+    </collision>
+    <inertial>
+        <origin rpy="0 0 0" xyz="0 0 0.0"/>
+        <mass value="0.01"/>
+        <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+</link>
+
+<!-- RH Leg -->
+<!-- RH Hip and HAA -->
+<joint name="3_rh_haa" type="revolute">
+    <axis xyz="-1 0 0"/>
+    <origin rpy="0 3.141592 0" xyz="-0.14775 -0.049 0.0"/>
+    <parent link="base"/>
+    <child link="rh_hip"/>
+    <limit effort="18" lower="-1.5" upper="1.5" velocity="41" armature="0.002268" damping="0.01"/>
+</joint>
+
+<link name="rh_hip">
+    <inertial>
+        <mass value="0.54"/>
+        <origin xyz="0.055 -0.036 0."/>
+        <inertia ixx="0.000381" ixy="0.000058" ixz="0.00000045" iyy="0.000560" iyz="0.00000095" izz="0.000444"/>
+    </inertial>
+    <visual>
+        <geometry>
+            <mesh filename="meshes/mini_vision_abd.dae"/>
+        </geometry>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <!-- <collision>
+        <geometry><cylinder length ="0.025" radius = "0.05"/></geometry>
+        <origin rpy="1.57079632679 0.0 0.0" xyz="0.052 -0.02 0.0"/>
+    </collision> -->
+</link>
+
+<!-- RH Thigh and HFE -->
+<joint name="rh_hfe" type="revolute">
+    <axis xyz="0 -1 0"/>
+    <origin rpy="0.0 3.141592 0.0" xyz="0.055 -0.019 0.00"/>
+    <parent link="rh_hip"/>
+    <child link="rh_thigh"/>
+    <limit effort="18" lower="-2.6" upper="2.6" velocity="41" armature="0.002268" damping="0.01"/>
+</joint>
+
+<link name="rh_thigh">
+    <inertial>
+        <mass value="0.634"/>
+        <origin xyz="0.0 -0.016 -0.02"/>
+        <inertia ixx="0.001983" ixy="0.000245" ixz="0.000013" iyy="0.002103" iyz="0.0000015" izz="0.000408"/>
+    </inertial>
+    <visual>
+        <geometry>
+            <mesh filename="meshes/mini_vision_upper_leg.dae"/>
+        </geometry>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <collision>
+        <geometry>
+            <cylinder length ="0.17" radius = "0.015"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 -0.05 -0.092"/>
+    </collision>
+</link>
+
+<!-- RH Shank and KFE -->
+<joint name="rh_kfe" type="revolute">
+    <axis xyz="0 -1 0"/>
+    <origin rpy="0.0 0 0.0" xyz="0.0 -0.049 -0.2085"/>
+    <parent link="rh_thigh"/>
+    <child link="rh_shank"/>
+    <limit effort="28" lower="-2.7" upper="2.7" velocity="26.8" armature="0.005484" damping="0.01"/>
+</joint>
+
+<link name="rh_shank">
+    <inertial>
+        <mass value="0.064"/>
+        <origin xyz="0.0 0.0 -0.061"/>
+        <inertia ixx="0.000245" ixy="0" ixz="0.0" iyy="0.000248" iyz="0" izz="0.000006"/>
+    </inertial>
+    <visual>
+        <geometry>
+            <mesh filename="meshes/lower_leg.dae"/>
+        </geometry>
+        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <collision>
+        <geometry>
+            <cylinder length ="0.1" radius = "0.01"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 0 -0.1"/>
+    </collision>
+</link>
+
+<!-- RH FOOT -->
+<joint name="rh_shank_to_foot" type="fixed" dont_collapse="true">
+    <parent link="rh_shank"/>
+    <child link="rh_foot"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.22"/>
+</joint>
+
+<link name="rh_foot">
+    <collision>
+        <origin xyz="0 0.0 0.024"/>
+        <geometry><sphere radius="0.0202"/></geometry>
+    </collision>
+    <inertial>
+        <origin rpy="0 0 0" xyz="0 0 -0.0"/>
+        <mass value="0.01"/>
+        <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+</link>
+
+<!-- LH Leg -->
+<!-- LH Hip and HAA -->
+<joint name="4_lh_haa" type="revolute">
+    <axis xyz="-1 0 0"/>
+    <origin rpy="0 3.141592 0" xyz="-0.14775 0.049 0.0"/>
+    <parent link="base"/>
+    <child link="lh_hip"/>
+    <limit effort="18" lower="-1.5" upper="1.5" velocity="41" armature="0.002268" damping="0.01"/>
+</joint>
+
+<link name="lh_hip">
+    <inertial>
+        <mass value="0.54"/>
+        <origin xyz="0.055 0.036 0."/>
+        <inertia ixx="0.000381" ixy="0.000058" ixz="0.00000045" iyy="0.000560" iyz="0.00000095" izz="0.000444"/>
+    </inertial>
+    <visual>
+        <geometry> <mesh filename="meshes/mini_vision_abd.dae"/> </geometry>
+        <origin rpy="3.141592 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <!-- <collision>
+        <geometry><cylinder length ="0.025" radius = "0.05"/></geometry>
+        <origin rpy="1.57079632679 0.0 0.0" xyz="0.052 0.02 0.0"/>
+    </collision> -->
+</link>
+
+<!-- LH Thigh and HFE -->
+<joint name="lh_hfe" type="revolute">
+    <axis xyz="0 -1 0"/>
+    <origin rpy="0.0 3.141592 0.0" xyz="0.055 0.019 0.00"/>
+    <parent link="lh_hip"/>
+    <child link="lh_thigh"/>
+    <limit effort="18" lower="-2.6" upper="2.6" velocity="41" armature="0.002268" damping="0.01"/>
+</joint>
+
+<link name="lh_thigh">
+    <inertial>
+        <mass value="0.634"/>
+        <origin xyz="0.0 0.016 -0.02"/>
+        <inertia ixx="0.001983" ixy="0.000245" ixz="0.000013" iyy="0.002103" iyz="0.0000015" izz="0.000408"/>
+    </inertial>
+    <visual>
+        <geometry>
+            <mesh filename="meshes/mini_vision_upper_leg.dae"/>
+        </geometry>
+        <origin rpy="0.0 0 3.141592" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <collision>
+        <geometry>
+            <cylinder length ="0.17" radius = "0.015"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 0.05 -0.092"/>
+    </collision>
+</link>
+
+<!-- LH Shank and KFE -->
+<joint name="lh_kfe" type="revolute">
+    <axis xyz="0 -1 0"/>
+    <origin rpy="0.0 0 0.0" xyz="0.0 0.049 -0.2085"/>
+    <parent link="lh_thigh"/>
+    <child link="lh_shank"/>
+    <limit effort="28" lower="-2.7" upper="2.7" velocity="26.8" armature="0.005484" damping="0.01"/>
+</joint>
+
+<link name="lh_shank">
+    <inertial>
+        <mass value="0.064"/>
+        <origin xyz="0.0 0.0 -0.061"/>
+        <inertia ixx="0.000245" ixy="0" ixz="0.0" iyy="0.000248" iyz="0" izz="0.000006"/>
+    </inertial>
+    <visual>
+        <geometry>
+            <mesh filename="meshes/lower_leg.dae"/>
+        </geometry>
+        <origin rpy="0.0 0.0 3.141592" xyz="0.0 0.0 0.0"/>
+    </visual>
+    <collision>
+        <geometry>
+            <cylinder length ="0.1" radius = "0.01"/>
+        </geometry>
+        <origin rpy="0 0 0" xyz="0 0 -0.1"/>
+    </collision>
+</link>
+
+<!-- LH FOOT -->
+<joint name="lh_shank_to_foot" type="fixed" dont_collapse="true">
+    <parent link="lh_shank"/>
+    <child link="lh_foot"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 -0.22"/>
+</joint>
+
+<link name="lh_foot">
+    <collision>
+        <origin xyz="0 0.0 0.024"/>
+        <geometry><sphere radius="0.0202"/></geometry>
+    </collision>
+    <inertial>
+        <origin rpy="0 0 0" xyz="0 0 0.0"/>
+        <mass value="0.01"/>
+        <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+    </inertial>
+</link>
+
+</robot>

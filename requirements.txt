@@ -1,0 +1,11 @@
+numpy==1.23.2
+pandas==1.4.3
+matplotlib==3.5.3
+wandb==0.13.2
+tensorboard== 2.10.0
+--find-links https://download.pytorch.org/whl/cu113/torch_stable.html
+torch==1.10.0+cu113
+torchvision==0.11.1+cu113
+torchaudio==0.10.0+cu113
+pygame==2.1.2
+pytest==7.2.2
