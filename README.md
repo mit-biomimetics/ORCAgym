@@ -1,4 +1,4 @@
-# ORCAgym - a clone of gpuGym - a clone of legged_gym #
+# ORCAgym - based on gpuGym, legged_gym #
 This repository is a bare-bones version of gpuGym for an ICRA 2024 submission, which is a port of legged_gym from the good folk over at RSL.
 It includes all components needed for sim-to-real transfer: actuator network, friction & mass randomization, noisy observations and random pushes during training.
 
