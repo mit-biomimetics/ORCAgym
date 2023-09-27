@@ -1,5 +1,5 @@
-# gpuGym - a clone of legged_gym #
-This repository is a port of legged_gym from the good folk over at RSL.
+# ORCAgym - a clone of gpuGym - a clone of legged_gym #
+This repository is a bare-bones version of gpuGym for an ICRA 2024 submission, which is a port of legged_gym from the good folk over at RSL.
 It includes all components needed for sim-to-real transfer: actuator network, friction & mass randomization, noisy observations and random pushes during training.
 
 ---
@@ -85,8 +85,16 @@ https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#ubuntu-ins
 
 ---
 ## Use ##
+### Play trained ORC Policies Evaluated for Paper ###
+- Download policies from https://www.dropbox.com/sh/ohfojoek29efir6/AAB5pySq--r1Fwm90CUoB7o2a?dl=0
+- Make directory "logs" inside ORCAgym, and copy all subfolders ("ORC_xxx_FullSend") into it
+- cd into ORCAgym/gym/scripts folder
+- ```python play_ORC.py --task=mini_cheetah_osc --ORC_toggle=<xxx>```
+   - By default the loaded policy is the last model of the last run of the experiment folder corresponding to the ORC_toggle
+   - Other runs/model iteration can be selected by setting `--load_run` and `--checkpoint`.
+
 ### Train ###  
-```python gym/scripts/train.py --task=mini_cheetah_ref```
+```python gym/scripts/train.py --task=mini_cheetah_osc```
 -  To run on CPU add following arguments: `--sim_device=cpu`, `--rl_device=cpu` (sim on CPU and rl on GPU is possible).
 -  To run headless (no rendering) add `--headless`.
 - **Important**: To improve performance, once the training starts press `v` to stop the rendering. You can then enable it later to check the progress.
@@ -102,19 +110,11 @@ https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#ubuntu-ins
  - --seed SEED:  Random seed.
  - --max_iterations MAX_ITERATIONS:  Maximum number of training iterations.
 
-
-### Play (a trained policy) ###  
-```python <gpuGym>/scripts/play.py --task=mini_cheetah_ref```
-- By default the loaded policy is the last model of the last run of the experiment folder.
-- Other runs/model iteration can be selected by setting `--load_run` and `--checkpoint`.
-
-
-
 ---
 ### Jenny's gpuGym weights crash course ###
 https://hackmd.io/@yHrQmxajTZOYt87bbz6YRg/SJbscyN3t
 
-----
+---
 ### Adding a new environment ###
 https://github.com/mit-biomimetics/gpuGym/wiki/Getting-Started#adding-a-new-environment
 
