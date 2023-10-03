@@ -64,24 +64,25 @@ class MiniCheetahOscCfg(MiniCheetahCfg):
 
     class osc:
         process_noise_std = 0.25
-        # oscillator parameters
-        omega = 3  # 0.5 #3.5  # in Hz
-        coupling = 1  # 0.02
-        osc_bool = False
-        grf_bool = False
-        randomize_osc_params = False
         grf_threshold = 0.1  # 20. # Normalized to body weight
+        # oscillator parameters
+        omega = 3  # gets overwritten
+        coupling = 1  # gets overwritten
+        osc_bool = False  # not used in paper
+        grf_bool = False  # not used in paper
+        randomize_osc_params = False
+        # randomization ranges: not used in paper
         omega_range = [1.0, 4.0]  # [0.0, 10.]
         coupling_range = [0.0, 1.0]  # with normalized grf, can have omega/coupling on same scale
         offset_range = [0.0, 0.0]
+
+        # choice of oscillator parameters, see paper equation (5)
         stop_threshold = 0.5
         omega_stop = 1.
         omega_step = 2.
         omega_slope = 1.
         omega_max = 4.0
         omega_var = 0.25
-        # coupling_step = 0.
-        # coupling_stop = 0.
         coupling_stop = 4.
         coupling_step = 1.
         coupling_slope = 0.
