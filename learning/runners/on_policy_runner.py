@@ -239,7 +239,6 @@ class OnPolicyRunner:
         return self.env.get_states(['terminated']).to(self.device)
 
     def get_obs_size(self, obs_list):
-        # todo make unit-test to assert len(shape)==1 always
         return self.get_obs(obs_list)[0].shape[0]
 
     def get_action_size(self, action_list):
@@ -290,9 +289,6 @@ class OnPolicyRunner:
             })
         self.logger.update_iterations(self.it, self.tot_iter,
                                       self.num_learning_iterations)
-
-        # TODO: iterate through the config for any extra things
-        # TODO: you might want to log
 
         if wandb.run is not None:
             self.logger.log_to_wandb()

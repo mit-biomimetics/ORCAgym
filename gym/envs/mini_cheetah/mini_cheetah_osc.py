@@ -47,9 +47,6 @@ class MiniCheetahOsc(MiniCheetah):
         elif self.cfg.osc.init_to == 'pace':
             self.oscillators[env_ids] = torch.tensor([0., torch.pi, 0., torch.pi],
                                                      device=self.device)
-            if self.cfg.osc.init_w_offset:
-                self.oscillators[env_ids, :] += \
-                    torch.rand_like(self.oscillators[env_ids, 0]).unsqueeze(1) * 2 * torch.pi
         elif self.cfg.osc.init_to == 'pronk':
             self.oscillators[env_ids, :] *= 0.
         elif self.cfg.osc.init_to == 'bound':
@@ -298,33 +295,6 @@ class MiniCheetahOsc(MiniCheetah):
         combined_rew = self._sqrdexp(swing_rew*2) + stance_rew
         prod = torch.prod(torch.clip(combined_rew, 0, 1), dim=1)
         return prod - torch.ones_like(prod)
-
-    def _reward_swing_velocity(self):
-        """ Reward non-zero end effector velocity during swing (0 to pi) """
-        # velocity = torch.tanh(torch.norm(self.end_effector_lin_vel, dim=-1))
-        velocity = torch.zeros_like(self.oscillators)  # TODO: Grab velocity from AJ V2 code
-        phase_bool = torch.lt(self.oscillators, torch.pi).int()
-        phase_sin = torch.maximum(torch.zeros_like(self.oscillators),
-                               torch.sin(self.oscillators))
-        if self.cfg.osc.osc_bool:
-            rew = phase_bool*velocity
-        else:
-            rew = phase_sin*velocity
-        return torch.mean(rew, dim=1)
-
-    def _reward_stance_velocity(self):
-        """ Reward zero end effector velocity during swing (pi to 2pi) """
-        # velocity = torch.tanh(torch.norm(self.end_effector_lin_vel, dim=-1))
-        velocity = torch.zeros_like(self.oscillators)  # TODO: Grab velocity from AJ V2 code
-        ph_bool = torch.gt(self.oscillators, torch.pi).int()
-        ph_sin = torch.maximum(torch.zeros_like(self.oscillators),
-                               - torch.sin(self.oscillators))
-        if self.cfg.osc.osc_bool:
-            rew = ph_bool*velocity
-        else:
-            rew = ph_sin*velocity
-        # return torch.mean(self._sqrdexp(rew), dim=1)  # TODO: Higher reward if rew close to zero (how to decouple so that ignore if not in stance??)
-        return - torch.mean(rew, dim=1)
 
     def _reward_dof_vel(self):
         return super()._reward_dof_vel()*self._switch()
