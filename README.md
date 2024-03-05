@@ -1,6 +1,6 @@
-# ORCAgym - based on gpuGym, legged_gym #
-This repository is a bare-bones version of gpuGym for our ICRA 2024 submission, which is a port of legged_gym from the good folk over at RSL ([code](https://github.com/leggedrobotics/legged_gym), [website](https://leggedrobotics.github.io/legged_gym/), [paper](https://arxiv.org/abs/2109.11978)).  
-Aside form the paper-specific robot implementations, this fork differs in some substantial reworking of how the environment and policy runner interact.  
+# ORCAgym #
+This repository is a bare-bones version of gpuGym for our ICRA 2024 paper [**Learning Emergent Gaits with Decentralized Phase Oscillators: on the role of Observations, Rewards, and Feedback**](https://arxiv.org/abs/2402.08662), which is a port of legged_gym from the good folk over at RSL ([code](https://github.com/leggedrobotics/legged_gym), [website](https://leggedrobotics.github.io/legged_gym/), [paper](https://arxiv.org/abs/2109.11978)).  
+A more up-to-date repo is available at [pkGym](https://github.com/mit-biomimetics/pkGym), which includes the oscillator implementation, but will eventually diverge from the paper resuls (and does not include some of the analysis scripts). We recommend that repo for new projects; compared to RSL legged_gym, this fork differs in some substantial refactoring, which makes exploring different implementations easier.  
 Feel free to open issues both about the code and the paper.  
 
 - [See Parameters](#reading-the-code)
