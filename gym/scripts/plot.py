@@ -1,19 +1,7 @@
-import pandas as pd
+
 import numpy as np
 import matplotlib.pyplot as plt
-from ast import literal_eval
-
-import os
-
-from gym.envs import __init__
-from gym import LEGGED_GYM_ROOT_DIR
-from gym.utils import get_args, task_registry
-
-# torch needs to be imported after isaacgym imports in local source
-import torch
-import pandas as pd
 import numpy as np
-import pandas as pd
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
 
@@ -104,7 +92,7 @@ def process_data(variable_name, full_data, df_phase):
     return data, smalldata, phases, new_vardata, samples
 
 def phase_plot(full_data, df_phase):
-    plotted_joint = "lh_hfe"
+    names = full_data['dof_names']
     q, _, phases, _,_ = process_data('dof_pos_obs', full_data, df_phase)
     qd,_,_,_,_= process_data('dof_vel', full_data, df_phase)
     color_map = ['r','g','b']
@@ -118,27 +106,28 @@ def phase_plot(full_data, df_phase):
 
         #plot
     handles = []
-    #int(len(keys)/4)
+    fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4, figsize = (10*4,10))
+    fig.suptitle(f"Phase Plot",fontsize=20)
     color_map = ['r','g','b']
-    for k in range(1,len(command_indexes)):
-        color = color_map.pop()
-        #print('here')
-        for j in range(45,50):
-            line, = plt.plot(q[plotted_joint][command_indexes[k-1]:command_indexes[k],j],qd[plotted_joint][command_indexes[k-1]:command_indexes[k],j],"-o", markersize=2, color=color, label=command_indexes[k])
-        handles.append(line)
-
-    plt.ylabel(f'qd',fontsize=20)
-    plt.xlabel('q',fontsize=20)
-    plt.title(f"Phase Plot",fontsize=20)
-    plt.legend(handles=handles)
-    plt.savefig(f'Phase Plot')
-    #plt.show()
-    handles = []
-    plt.cla()
+    axes = [ax1, ax2, ax3, ax4]
+    for i in range(0,4):
+        plotted_joint = names[i*3+2]
+        color_map = ['r','g','b']
+        for k in range(1,len(command_indexes)):
+            color = color_map.pop()
+            #print('here')
+            for j in range(45,50):
+                line, = axes[i].plot(q[plotted_joint][command_indexes[k-1]:command_indexes[k],j],qd[plotted_joint][command_indexes[k-1]:command_indexes[k],j],"-o", markersize=2, color=color, label=command_indexes[k])
+            handles.append(line)
+        axes[i].set(xlabel='q', ylabel='qd')
+        axes[i].legend(handles=handles)
+        axes[i].title.set_text(plotted_joint)
+        #plt.show()
+        handles = []
+    fig.savefig(f'Phase Plot')
 
 def time_plot(full_data, df_phase):
     q, _,phases,_,_ = process_data('dof_pos_obs', full_data, df_phase)
-    qd,_,_,_,_ = process_data('dof_vel', full_data, df_phase)
     keys = full_data['dof_names'] #for humanoid: ["right_hip_yaw", "right_hip_abad","right_hip_pitch","right_knee","right_ankle","left_hip_yaw","left_hip_abad","left_hip_pitch","left_knee","left_ankle"]
     color_map = ['r','g','b']
 
@@ -254,9 +243,9 @@ data['reward'] = np.reshape(data['reward'], (data['reward'].shape[0],1))
 #     plot_data(d, data, data['oscillators'])
 #     #check_means(d, data, data['oscillators']) #ONLY WORKS FOR data with all 12 dof
 # time_plot(data, data['oscillators'])
-# phase_plot(data, data['oscillators'])
-for d in data_names[5:-1]:
-    print(d)
-    reorg_plot_data(d, data)
+phase_plot(data, data['oscillators'])
+# for d in data_names[5:-1]:
+#     print(d)
+#     reorg_plot_data(d, data)
 
 
